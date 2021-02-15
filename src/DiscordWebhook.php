@@ -1,5 +1,5 @@
 <?php
-class Webhook {
+class DiscordWebhook {
 
 	/* Message object */
 	private object $webhook;
@@ -31,7 +31,7 @@ class Webhook {
 		$this->webhook->username = null;
 		$this->webhook->avatar_url = null;
 		$this->webhook->tts = null;
-		$this->webhook->file = null;
+		$this->webhook->file = new stdClass();
 		$this->webhook->embeds = [];
 		$this->webhook->allowed_mentions = new stdClass();
 		$this->webhook->allowed_mentions->parse = array();
@@ -70,6 +70,16 @@ class Webhook {
 	public function setTTS (bool $status) : object
 	{
 		$this->webhook->tts = $status;
+
+		return $this;
+	}
+
+	public function attachFile (string $path, string $type, string $name) : object
+	{
+		return false; // Disabled for the moment
+		$this->webhook->file->path = $path;
+		$this->webhook->file->type = $type;
+		$this->webhook->file->name = $name;
 
 		return $this;
 	}
@@ -162,17 +172,31 @@ class Webhook {
 
 	public function send () : string
 	{
+		$ch = curl_init();
+
 		$data = (array) $this->webhook;
 
 		if(!$this->allowedMentionsIsUsed) unset($data['allowed_mentions']); // If allowed mentions is not used, default to normal behavior
 
-		$ch = curl_init();
+		if(isset($this->webhook->file->path))
+		{
+			unset($data['embeds']);
+			$data['file'] = curl_file_create($this->webhook->file->path, $this->webhook->file->type, $this->webhook->file->name);
+			$data = http_build_query($data);
+			$headers = ["Content-Type: multipart/form-data"];
+		}
+		else
+		{
+			$data = json_encode($data);
+			$headers = ["Content-Type: application/json"];
+		}
+		
 		curl_setopt_array($ch, [
 		    CURLOPT_URL => $this->webhookURL,
 		    CURLOPT_RETURNTRANSFER => true,
 		    CURLOPT_POST => true,
-		    CURLOPT_POSTFIELDS => json_encode($data),
-		    CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
+		    CURLOPT_POSTFIELDS => $data,
+		    CURLOPT_HTTPHEADER => $headers,
 		    CURLOPT_CONNECTTIMEOUT => 10,
 		    CURLOPT_TIMEOUT => 10
 		]);

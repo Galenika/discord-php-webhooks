@@ -1,9 +1,9 @@
 <?php
-include '../src/Webhook.php';
+include '../src/DiscordWebhook.php';
 include '../src/MessageEmbed.php';
 include '../src/Util.php';
 
-$webhook = new Webhook('https://discord.com/api/webhooks/810624526143717426/Nm6eey0OBbtKO04P1Iyl5HwacaIfPR9V2CJwUu0h-k1c_Y3AVM5jZfVfynP8t-z20gBC');
+$webhook = new DiscordWebhook('https://discord.com/api/webhooks/810624526143717426/Nm6eey0OBbtKO04P1Iyl5HwacaIfPR9V2CJwUu0h-k1c_Y3AVM5jZfVfynP8t-z20gBC');
 
 $embed = new MessageEmbed();
 $messageEmbed = $embed
@@ -37,6 +37,7 @@ $messageEmbed = $embed
 echo $webhook -> setContent('Hello world')																// Set webhook message content
 		 -> setUsername('PHP Webhook')																	// Set webhook username (o)
 		 -> setAvatar('https://example.com/webhook_avatar.png')											// Set webhook avatar (o)
+		 //-> attachFile("https://i.imgur.com/dlVwgiZ.jpg", "image/png", "test.png")
 		 -> setTTS(false)																				// Set webhook content TTS (o, default=false)
 		 -> addEmbed($messageEmbed)																		// Add embed to webhook (from MessageEmbed class)
 		 //-> addMentionsParse("everyone", "roles", "users")											// Add allowed_mentions parse

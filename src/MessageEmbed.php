@@ -43,7 +43,7 @@ class MessageEmbed {
 		$this->errors = array();
 	}
 
-	public function setColor (string|int|array $color) : object
+	public function setColor (string|int|array $color) : self
 	{
 		if(in_array(gettype($color), ["string", "integer"]))
 		{
@@ -64,7 +64,7 @@ class MessageEmbed {
 		return $this;
 	}
 
-	public function setTitle (string|int|array $title) : object
+	public function setTitle (string|int|array $title) : self
 	{
 		$title = Util::resolveString($title);
 		if(strlen($title) > self::TITLE_MAX_LENGTH)
@@ -79,14 +79,14 @@ class MessageEmbed {
 		return $this;
 	}
 
-	public function setURL (string $url) : object
+	public function setURL (string $url) : self
 	{
 		$this->embed->url = $url;
 
 		return $this;
 	}
 
-	public function setAuthor (string $name, string $iconURL = null, string $url = null) : object
+	public function setAuthor (string $name, string $iconURL = null, string $url = null) : self
 	{
 
 		$this->updateTotalLength(strlen($name) - strlen($this->embed->author->name));
@@ -112,14 +112,14 @@ class MessageEmbed {
 		return $this;
 	}
 
-	public function setThumbnail (string $thumbnail) : object
+	public function setThumbnail (string $thumbnail) : self
 	{
 		$this->embed->thumbnail->url = $thumbnail;
 
 		return $this;
 	}
 
-	public function addField (string $name, string $value, bool $inline = false) : object
+	public function addField (string $name, string $value, bool $inline = false) : self
 	{
 		if(count($this->embed->fields) >= self::FIELDS_MAX_SIZE)
 		{
@@ -152,7 +152,7 @@ class MessageEmbed {
 		return $this;
 	}
 
-	public function addFields (array $fields) : object
+	public function addFields (array $fields) : self
 	{
 		if(count($fields) > 0)
 		{
@@ -190,7 +190,7 @@ class MessageEmbed {
 		return $this;
 	}
 
-	public function spliceFields (int $index, int $deleteCount = 1, array ...$fields) : object
+	public function spliceFields (int $index, int $deleteCount = 1, array ...$fields) : self
 	{
 		if(($index + $deleteCount) > count($this->embed->fields))
 		{
@@ -212,14 +212,14 @@ class MessageEmbed {
 		return $this;
 	}
 
-	public function setImage (string $imageURL) : object
+	public function setImage (string $imageURL) : self
 	{
 		$this->embed->image->url = $imageURL;
 
 		return $this;
 	}
 
-	public function setTimestamp (string|int $timestamp = -1) : object
+	public function setTimestamp (string|int $timestamp = -1) : self
 	{
 		if($timestamp < 0) $timestamp = date("c");
 
@@ -228,7 +228,7 @@ class MessageEmbed {
 		return $this;
 	}
 
-	public function setFooter ($text, $iconURL = null) : object
+	public function setFooter ($text, $iconURL = null) : self
 	{
 		if(strlen($text) > self::FOOTER_TEXT_MAX_LENGTH)
 		{
