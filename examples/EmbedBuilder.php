@@ -13,9 +13,9 @@ $embed  -> setTitle('Hello')																			// Set title
 		-> setThumbnail('https://example.com/thumbnail.png')											// Set embed thumbnail
 		-> addField('Field name', 'Field value')														// Add one field
 		-> addFields(																					// Add multiple fields at once
-				[
-					["name"=>"Field name 1", "value"=>"Field value 1"],
-					["name"=>"Field name 2", "value"=>"Field value 2"]
+				[																						// Initialize array of fields
+					["name"=>"Field name 1", "value"=>"Field value 1"],									// Add new field
+					["name"=>"Field name 2", "value"=>"Field value 2", "inline"=>true]					// Add new field
 				]
 			)
 		-> spliceFields(
