@@ -25,7 +25,6 @@ $embed  -> setTitle('Hello')																			// Set title
 				["name"=> "New field n", "value"=>"New field n"]										// New field n (o)
 			)
 		-> setImage('https://example.com/embed_image.png')												// Set embed image
-		-> setVideo('https://example.com/embed_video.mp4')												// Set embed video (possible deprecated)
 		-> setTimestamp()																				// Set embed footer timestamp to current one
 		-> setTimestamp('2021-02-15T17:38:59+01:00')													// Set embed footer timestamp to custom one
 		-> setFooter('My footer', 'https://example.com/footer_image.png')								// Set embed footer text and icon URL (o)

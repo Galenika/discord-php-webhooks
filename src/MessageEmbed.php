@@ -36,7 +36,6 @@ class MessageEmbed {
 		$this->embed->timestamp = null;
 		$this->embed->thumbnail = (object) array("url"=>null);;
 		$this->embed->image = (object) array("url"=>null);
-		$this->embed->video = (object) array("url"=>null);
 		$this->embed->author = (object) array("name"=>null, "url"=>null, "icon_url"=>null);
 		$this->embed->footer = (object) array("text"=>null, "icon_url"=>null);
 
@@ -70,7 +69,7 @@ class MessageEmbed {
 		$title = Util::resolveString($title);
 		if(strlen($title) > self::TITLE_MAX_LENGTH)
 		{
-			$this->triggerError(sprintf("Title must be fewer than or equal to %d characters", self::TITLE_MAX_LENGTH));
+			Util::triggerError(sprintf("Title must be fewer than or equal to %d characters", self::TITLE_MAX_LENGTH));
 		}
 		
 		$this->updateTotalLength(strlen($title) - strlen($this->embed->title));
@@ -104,7 +103,7 @@ class MessageEmbed {
 		$description = Util::resolveString($description);
 		if(strlen($description) > self::DESCRIPTION_MAX_LENGTH)
 		{
-			$this->triggerError(sprintf("Description must be fewer than or equal to %d characters", self::DESCRIPTION_MAX_LENGTH));
+			Util::triggerError(sprintf("Description must be fewer than or equal to %d characters", self::DESCRIPTION_MAX_LENGTH));
 		}
 
 		$this->updateTotalLength(strlen($description) - strlen($this->embed->description));
@@ -124,18 +123,18 @@ class MessageEmbed {
 	{
 		if(count($this->embed->fields) >= self::FIELDS_MAX_SIZE)
 		{
-			$this->triggerError(sprintf("Embed cannot exceed %d fields", self::FIELDS_MAX_SIZE));
+			Util::triggerError(sprintf("Embed cannot exceed %d fields", self::FIELDS_MAX_SIZE));
 		}
 		else
 		{
 			if(strlen($name) > self::FIELD_NAME_MAX_LENGTH)
 			{
-				$this->triggerError(sprintf("Field name must be fewer than or equal to %d characters", self::FIELD_NAME_MAX_LENGTH));
+				Util::triggerError(sprintf("Field name must be fewer than or equal to %d characters", self::FIELD_NAME_MAX_LENGTH));
 			}
 
 			if(strlen($name) > self::DESCRIPTION_MAX_LENGTH)
 			{
-				$this->triggerError(sprintf("Field description must be fewer than or equal to %d characters", self::DESCRIPTION_MAX_LENGTH));
+				Util::triggerError(sprintf("Field description must be fewer than or equal to %d characters", self::DESCRIPTION_MAX_LENGTH));
 			}
 
 			$field = new stdClass();
@@ -183,7 +182,7 @@ class MessageEmbed {
 				}
 				else
 				{
-					$this->triggerError(sprintf("Incorrectly formatted field: %s", json_encode($field)));
+					Util::triggerError(sprintf("Incorrectly formatted field: %s", json_encode($field)));
 				}
 			}
 		}
@@ -191,11 +190,11 @@ class MessageEmbed {
 		return $this;
 	}
 
-	public function spliceFields(int $index, int $deleteCount = 1, array ...$fields) : object
+	public function spliceFields (int $index, int $deleteCount = 1, array ...$fields) : object
 	{
 		if(($index + $deleteCount) > count($this->embed->fields))
 		{
-			$this->triggerError("Splice delete count exceeds array length from selected starting index", "OUT_OF_BOUNDS");
+			Util::triggerError("Splice delete count exceeds array length from selected starting index", "OUT_OF_BOUNDS");
 		}
 
 		for($i = 0; $i < $deleteCount; $i++)
@@ -220,13 +219,6 @@ class MessageEmbed {
 		return $this;
 	}
 
-	public function setVideo (string $videoURL) : object
-	{
-		$this->embed->video->url = $videoURL;
-
-		return $this;
-	}
-
 	public function setTimestamp (string|int $timestamp = -1) : object
 	{
 		if($timestamp < 0) $timestamp = date("c");
@@ -240,7 +232,7 @@ class MessageEmbed {
 	{
 		if(strlen($text) > self::FOOTER_TEXT_MAX_LENGTH)
 		{
-			$this->triggerError(sprintf("Footer text must be fewer than or equal to %d characters", self::FOOTER_TEXT_MAX_LENGTH));
+			Util::triggerError(sprintf("Footer text must be fewer than or equal to %d characters", self::FOOTER_TEXT_MAX_LENGTH));
 		}
 		
 		$this->updateTotalLength(strlen($text) - strlen($this->embed->footer->text));
@@ -255,7 +247,7 @@ class MessageEmbed {
 	{
 		if($this->totalLength > self::EMBED_MAX_TOTAL_LENGTH)
 		{
-			$this->triggerError(sprintf("The characters in all title, description, field->name, field->value, footer->text, and author->name fields must not exceed %d characters in total", self::EMBED_MAX_TOTAL_LENGTH));
+			Util::triggerError(sprintf("The characters in all title, description, field->name, field->value, footer->text, and author->name fields must not exceed %d characters in total", self::EMBED_MAX_TOTAL_LENGTH));
 		}
 
 		return $this->embed;
@@ -266,17 +258,5 @@ class MessageEmbed {
 		$this->totalLength += $length;
 
 		if($this->totalLength < 0) $this->totalLength = 0;
-	}
-
-	private function triggerError (string $error, string $type = "EXCEPTION") : void
-	{
-		if($type === "EXCEPTION")
-		{
-			throw new Exception($error);
-		}
-		else if($type === "OUT_OF_BOUNDS")
-		{
-			throw new OutOfBoundsException($error);
-		}
 	}
 }
