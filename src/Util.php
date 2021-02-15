@@ -37,4 +37,16 @@ class Util {
 		if(gettype($data) === "string") return $data;
 		return implode("\n", $data);
 	}
+
+	public static function triggerError (string $error, string $type = "EXCEPTION") : void
+	{
+		if($type === "EXCEPTION")
+		{
+			throw new Exception($error);
+		}
+		else if($type === "OUT_OF_BOUNDS")
+		{
+			throw new OutOfBoundsException($error);
+		}
+	}
 }
