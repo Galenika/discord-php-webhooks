@@ -1,3 +1,4 @@
+<?php
 class Util {
 	const Colors = array(
 		"DEFAULT" => "0x000000",
