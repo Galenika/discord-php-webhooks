@@ -34,16 +34,27 @@ $messageEmbed = $embed
 		-> setFooter('My footer', 'https://example.com/footer_image.png')								// Set embed footer text and icon URL (o)
 		-> get();
 
-echo $webhook -> setContent('Hello world')																// Set webhook message content
+$webhook -> setContent('Hello world')																	// Set webhook message content
 		 -> setUsername('PHP Webhook')																	// Set webhook username (o)
 		 -> setAvatar('https://example.com/webhook_avatar.png')											// Set webhook avatar (o)
-		 //-> attachFile("https://i.imgur.com/dlVwgiZ.jpg", "image/png", "test.png")
+		 -> attachFile("https://i.imgur.com/dlVwgiZ.jpg", "image/png", "test.png")						// Attach file path, type, name (o)
+		 -> attachFile("https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png", "image/png", "google.png")
 		 -> setTTS(false)																				// Set webhook content TTS (o, default=false)
 		 -> addEmbed($messageEmbed)																		// Add embed to webhook (from MessageEmbed class)
 		 //-> addMentionsParse("everyone", "roles", "users")											// Add allowed_mentions parse
 		 //-> addMentionsRoles("000000000000000000")													// Add allowed_mentions roles 
 		 //-> addMentionsUsers("000000000000000000")													// Add allowed_mentions users
-		 -> send();
+		;
+
+/* Whether the webhook sends or errors, you can get the Discord API response object by calling the getResponse() method after the send() method */
+if($webhook->send())
+{
+	echo "Webhook has been successfully sent.\n";
+}
+else
+{
+	echo "There was an error sending the webhook.\n";
+}
 
 $discordWebhook = $webhook->get();
 echo json_encode($discordWebhook, JSON_PRETTY_PRINT);

@@ -11,8 +11,12 @@ class DiscordWebhook {
 	private array $allowedMentionTypes;
 	private bool $allowedMentionsIsUsed;
 
+	/* Discord webhook response */
+	private object $response;
+
 	const CONTENT_MAX_LENGTH = 2000;
 	const EMBEDS_MAX_SIZE = 10;
+	const MAX_FILES_SIZE = 10;
 	const ALLOWED_MENTIONS_ROLES_SIZE = 100;
 	const ALLOWED_MENTIONS_USERS_SIZE = 100;
 
@@ -25,13 +29,16 @@ class DiscordWebhook {
 		$this->allowedMentionTypes = ["roles", "users", "everyone"];
 		$this->allowedMentionsIsUsed = false;
 
+		/* Initialize response to empty object */
+		$this->response = new stdClass();
+
 		/* Set default values for required params */
 		$this->webhook = new stdClass();
 		$this->webhook->content = null;
 		$this->webhook->username = null;
 		$this->webhook->avatar_url = null;
 		$this->webhook->tts = null;
-		$this->webhook->file = new stdClass();
+		$this->webhook->files = array();
 		$this->webhook->embeds = [];
 		$this->webhook->allowed_mentions = new stdClass();
 		$this->webhook->allowed_mentions->parse = array();
@@ -76,10 +83,12 @@ class DiscordWebhook {
 
 	public function attachFile (string $path, string $type, string $name) : object
 	{
-		return false; // Disabled for the moment
-		$this->webhook->file->path = $path;
-		$this->webhook->file->type = $type;
-		$this->webhook->file->name = $name;
+		if(count($this->webhook->files) > self::MAX_FILES_SIZE)
+		{
+			Util::triggerError(sprintf("Message cannot have more than %d attachments", self::MAX_FILES_SIZE));
+		}
+
+		array_push($this->webhook->files, new CurlFile($path, $type, $name));
 
 		return $this;
 	}
@@ -170,7 +179,7 @@ class DiscordWebhook {
 		return $this;
 	}
 
-	public function send () : string
+	public function send () : bool
 	{
 		$ch = curl_init();
 
@@ -178,19 +187,18 @@ class DiscordWebhook {
 
 		if(!$this->allowedMentionsIsUsed) unset($data['allowed_mentions']); // If allowed mentions is not used, default to normal behavior
 
-		if(isset($this->webhook->file->path))
+		$data = json_encode($data);
+
+		if(count($this->webhook->files) > 0)
 		{
-			unset($data['embeds']);
-			$data['file'] = curl_file_create($this->webhook->file->path, $this->webhook->file->type, $this->webhook->file->name);
-			$data = http_build_query($data);
+			$data = array_merge(array("payload_json"=>$data), $this->webhook->files);
 			$headers = ["Content-Type: multipart/form-data"];
 		}
 		else
 		{
-			$data = json_encode($data);
 			$headers = ["Content-Type: application/json"];
 		}
-		
+
 		curl_setopt_array($ch, [
 		    CURLOPT_URL => $this->webhookURL,
 		    CURLOPT_RETURNTRANSFER => true,
@@ -202,9 +210,16 @@ class DiscordWebhook {
 		]);
 
 		$response = curl_exec($ch);
-
+		$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		curl_close($ch);
+		echo $response;
+		$this->response = json_decode($response);
 
-		return $response;
+		return $httpcode === 200;
+	}
+
+	public function getResponse() : object
+	{
+		return $this->response;
 	}
 }
