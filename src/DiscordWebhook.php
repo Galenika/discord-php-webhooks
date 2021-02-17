@@ -212,8 +212,13 @@ class DiscordWebhook {
 		$response = curl_exec($ch);
 		$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		curl_close($ch);
-		echo $response;
+
 		$this->response = json_decode($response);
+
+		if($httpcode === 429){
+			usleep($this->response->retry_after * 1000);
+			return $this->send();
+		}
 
 		return $httpcode === 200;
 	}
