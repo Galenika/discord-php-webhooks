@@ -37,8 +37,8 @@ $messageEmbed = $embed
 $webhook -> setContent('Hello world')																	// Set webhook message content
 		 -> setUsername('PHP Webhook')																	// Set webhook username (o)
 		 -> setAvatar('https://example.com/webhook_avatar.png')											// Set webhook avatar (o)
-		 -> attachFile("https://i.imgur.com/dlVwgiZ.jpg", "image/png", "test.png")						// Attach file path, type, name (o)
-		 -> attachFile("https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png", "image/png", "google.png")
+		 -> attachFile("https://i.imgur.com/LPqyb6S.png", "image/png", "remoteImage.png")				// Attach file from URL, type, name (o)
+		 -> attachFile("../resources/image.png", "image/png", "localImage.png")							// Attach file using local path (o)
 		 -> setTTS(false)																				// Set webhook content TTS (o, default=false)
 		 -> addEmbed($messageEmbed)																		// Add embed to webhook (from MessageEmbed class)
 		 //-> addMentionsParse("everyone", "roles", "users")											// Add allowed_mentions parse
